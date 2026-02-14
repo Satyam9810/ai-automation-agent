@@ -3,10 +3,10 @@ AI Workflow Builder — Main Application Entry Point
 FastAPI + Gemini + Pydantic | Serverless-friendly MVP
 """
 
+import os
 from fastapi import FastAPI, Request
-from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 
 from app.api.routes import router
 from app.core.logging import get_logger
@@ -23,7 +23,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # tighten in prod
+    allow_origins=["*"],
     allow_credentials=False,
     allow_methods=["POST", "GET"],
     allow_headers=["*"],
@@ -32,23 +32,9 @@ app.add_middleware(
 app.include_router(router)
 
 
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    """Reshape Pydantic's validation errors to match our error contract."""
-    errors = exc.errors()
-    detail = "; ".join(
-        f"{'.'.join(str(loc) for loc in e['loc'])}: {e['msg']}"
-        for e in errors
-    )
-    return JSONResponse(
-        status_code=422,
-        content={"error": "validation_error", "detail": detail},
-    )
-
-
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    logger.error("unhandled_exception", extra={"error": str(exc), "path": request.url.path})
+    logger.error("unhandled_exception", error=str(exc), path=request.url.path)
     return JSONResponse(
         status_code=500,
         content={"error": "internal_server_error", "detail": "An unexpected error occurred."},
@@ -58,3 +44,10 @@ async def global_exception_handler(request: Request, exc: Exception):
 @app.get("/health")
 async def health():
     return {"status": "ok", "service": "ai-workflow-builder"}
+
+
+@app.get("/")
+async def frontend():
+    """Serve the frontend UI from index.html in the project root."""
+    index_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "index.html")
+    return FileResponse(index_path)
