@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "app/main.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app/main.py"
+    }
+  ],
+  "env": {
+    "GEMINI_API_KEY": "@gemini-api-key",
+    "ENVIRONMENT": "production",
+    "LOG_LEVEL": "INFO",
+    "GEMINI_TIMEOUT_SECONDS": "28"
+  },
+  "functions": {
+    "app/main.py": {
+      "maxDuration": 30
+    }
+  }
+}
