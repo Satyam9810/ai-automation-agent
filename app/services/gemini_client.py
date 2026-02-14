@@ -186,6 +186,8 @@ async def call_gemini(
         model=settings.gemini_model,
         api_key=settings.gemini_api_key,
     )
+    import logging
+    logging.getLogger("httpx").setLevel(logging.WARNING)
 
     last_error: WorkflowError | None = None
     attempt = 0
