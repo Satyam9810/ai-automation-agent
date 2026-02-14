@@ -680,10 +680,19 @@ function setupCounter(textareaId, counterId, max) {
 setupCounter('instruction', 'instruction-count', 2000);
 setupCounter('document',    'document-count',    40000);
 
+// ── Sanitize input — strips control characters that break JSON ─
+function sanitize(str) {
+  return str
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ' ')
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    .trim();
+}
+
 // ── Main function ───────────────────────────────────────
 async function runWorkflow() {
-  const instruction = document.getElementById('instruction').value.trim();
-  const doc         = document.getElementById('document').value.trim();
+  const instruction = sanitize(document.getElementById('instruction').value);
+  const doc         = sanitize(document.getElementById('document').value);
   const errorBox    = document.getElementById('error-box');
   const results     = document.getElementById('results');
   const btn         = document.getElementById('run');
