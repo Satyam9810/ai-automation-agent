@@ -3,11 +3,7 @@
   "builds": [
     {
       "src": "app/main.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "15mb",
-        "maxDuration": 30
-      }
+      "use": "@vercel/python"
     }
   ],
   "routes": [
@@ -15,10 +11,5 @@
       "src": "/(.*)",
       "dest": "app/main.py"
     }
-  ],
-  "env": {
-    "ENVIRONMENT": "production",
-    "LOG_LEVEL": "INFO",
-    "GEMINI_TIMEOUT_SECONDS": "28"
-  }
+  ]
 }
