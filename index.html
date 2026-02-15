@@ -736,7 +736,7 @@ async function runWorkflow() {
     if (err.name === 'TypeError' && err.message.includes('fetch')) {
       showError('Cannot reach the API. Make sure your backend is deployed and API_BASE is set correctly.');
     } else {
-      showError('Unexpected error: ' + err.message);
+      showError('The AI took too long to respond. Please try again — it usually works on the second attempt.');
     }
     updateFooter('error');
   } finally {
